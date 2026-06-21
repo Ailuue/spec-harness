@@ -7,6 +7,29 @@ You are running the **/analyze** phase. Treat it as a hostile review by someone
 who did **not** write any of this and wants to find what's broken **before**
 anyone writes code. Be harsh. A clean pass must be *earned*, not assumed.
 
+## Mechanical gate (run this BEFORE spending reviewer budget)
+
+The FR→plan→task traceability matrix is graph reachability — deterministic and
+cheap, and exactly what an LLM gets subtly wrong under load. Don't build it by
+hand. Run the checker first:
+
+```sh
+cd tools && npm install --silent && npm run trace --silent -- <slug>
+```
+
+- **If it exits non-zero (a GATE violation: dropped/uncovered FR, an unresolved
+  `[NEEDS CLARIFICATION:]`, a blocked task, a malformed artifact):** stop here.
+  Report the gate output and send the work back to the phase each finding names —
+  do **not** delegate the judgment audit yet. A mechanical hole doesn't deserve
+  reviewer budget.
+- **If it passes:** carry its **matrix** and **advisory** notes (orphan tasks,
+  infra-only coverage, Basis drift) into the audit as established fact, so the
+  reviewer spends its effort on judgment — the Art. V vs VI tension, laundered
+  assumptions — not on re-deriving coverage.
+
+This does not replace the review below; it clears the deterministic checks off the
+reviewer's plate.
+
 ## Independence (and its cost)
 
 Review as fresh context. Strongly prefer delegating the audit to the `validator`
@@ -26,10 +49,13 @@ finding.
 
 ## What to hunt for (be exhaustive and skeptical)
 
-1. **Traceability matrix.** Build it: every `FR-n` → plan element → task(s).
-   - FR with no plan / tasks → **dropped requirement**.
-   - Plan / task with no FR → **invented scope / scope creep**.
-   - FR with no acceptance criteria → **untestable requirement**.
+1. **Traceability matrix.** The `tools` trace gate already built this
+   mechanically (see above) — take its matrix and violations as given; don't
+   re-derive the graph by hand. Your job is the part it can't judge: an FR with
+   no acceptance criteria → **untestable requirement**; whether an `ORPHAN_TASK`
+   or `INFRA_ONLY_FR` advisory is real scope creep or benign; whether a "covered"
+   FR is covered *meaningfully* (the task actually exercises the requirement) and
+   not just nominally linked.
 2. **Constitution conformance — adjudicate, don't grep.** For each requirement,
    cite the specific **article · clause** it touches; keyword-matching ("network →
    Art. I") is not analysis. Check whether honoring one article *strains* another,
