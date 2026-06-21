@@ -7,13 +7,16 @@ You are running the **/analyze** phase. Treat it as a hostile review by someone
 who did **not** write any of this and wants to find what's broken **before**
 anyone writes code. Be harsh. A clean pass must be *earned*, not assumed.
 
-## Independence
+## Independence (and its cost)
 
 Review as fresh context. Strongly prefer delegating the audit to the `validator`
 subagent (it cannot have authored the work): hand it the slug, take back its
-findings, and treat them as the spine of your report. If you author and review in
-the same breath, you will miss your own gaps — that is the whole reason this phase
-is separate.
+findings, and treat them as the spine of your report.
+
+But know what that isolation costs: the reviewer sees only the four files — never
+the conversation, never `runs/LOG.md`. So a decision that was contested and then
+written up as confident prose looks identical to a fact. Counter this explicitly
+(see "Laundered assumptions"); never mistake a confident spec for a correct one.
 
 ## Inputs
 
@@ -27,16 +30,31 @@ finding.
    - FR with no plan / tasks → **dropped requirement**.
    - Plan / task with no FR → **invented scope / scope creep**.
    - FR with no acceptance criteria → **untestable requirement**.
-2. **Constitution conformance.** Re-check *every* artifact against *every* article
-   independently — assume the `/plan` gate missed something. A violation buried
-   inside a large scope is exactly what you are here to catch.
-3. **Contradictions.** Between any two artifacts, or within one (e.g. a non-goal
+2. **Constitution conformance — adjudicate, don't grep.** For each requirement,
+   cite the specific **article · clause** it touches; keyword-matching ("network →
+   Art. I") is not analysis. Check whether honoring one article *strains* another,
+   and where an article's application is genuinely arguable, **make the call
+   yourself, with reasoning** — a verdict, not a shrug.
+   - A clear breach of a bright-line article (I–IV) → **violation** (Critical).
+   - A **tension** (e.g. a delete/edit feature under Art. V "nothing silently
+     lost" vs. Art. VI "the user can remove their data"): if the plan argued the
+     tradeoff, scrutinize the argument; if it silently picked a side, or never
+     noticed the tension, that is a finding. A buried violation inside a large
+     scope, and an un-noticed tension, are exactly what you are here to catch.
+3. **Laundered assumptions.** Read the spec's **Decisions & assumptions**, then —
+   independently — list what *you* think should have required a decision for this
+   feature, and compare. Flag: (a) confident requirements that resolve a
+   contestable point with **no matching record**; (b) **⚠ assumed** decisions that
+   carry real risk; (c) a non-trivial spec with a thin or empty Decisions section —
+   silence there usually means guesses were laundered into prose, not that nothing
+   was uncertain.
+4. **Contradictions.** Between any two artifacts, or within one (e.g. a non-goal
    that a task implements; two requirements that can't both hold).
-4. **Ambiguity & weasel words.** "fast", "simple", "secure", "user-friendly",
+5. **Ambiguity & weasel words.** "fast", "simple", "secure", "user-friendly",
    "etc." with no measure. Any unresolved `[NEEDS CLARIFICATION]`.
-5. **Missing edges.** Empty dataset, negative / zero / huge amounts, duplicates,
+6. **Missing edges.** Empty dataset, negative / zero / huge amounts, duplicates,
    deleting / looking up things that don't exist, ordering, persistence failure.
-6. **Right-sizing.** Is this one spec that should have been three? Say so.
+7. **Right-sizing.** Is this one spec that should have been three? Say so.
 
 ## Output — a verdict, not a summary
 
@@ -44,8 +62,8 @@ Print:
 
 - **Verdict:** `PASS` / `PASS-WITH-RISKS` / `FAIL`.
 - A numbered findings table: `#`, severity (**Critical / High / Medium / Low**),
-  the artifact(s) involved, the problem, and the concrete fix **plus which phase
-  it goes back to** (`/specify`, `/plan`, or `/tasks`).
+  the artifact(s) and **article · clause** involved, the problem, and the concrete
+  fix **plus which phase it goes back to** (`/specify`, `/plan`, or `/tasks`).
 - Any **Critical** finding forces `FAIL` and blocks implementation.
 
 Force yourself to look hard: if you report zero findings, you must justify, item by

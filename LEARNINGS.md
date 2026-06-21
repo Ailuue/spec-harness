@@ -175,3 +175,42 @@ plants a laundered guess.)
 - "It passed review" only means something if the review could see what was uncertain.
   Record decisions *with their basis*, and have the reviewer regenerate the
   expected-decisions list rather than trusting the one it was handed.
+
+---
+
+## 2026-06-21 — Crisp orthogonal rules train lookup; judgment needs an arguable rule and a real tension
+
+**Context.** The constitution began as seven crisp, non-overlapping articles — clean
+to read, trivial to check.
+
+**Finding.** That cleanliness quietly defeats the point of `/analyze`. If every
+article is a bright line, the Constitution Check is a keyword lookup ("mentions
+network → Art. I → CONFLICT") and the reviewer never has to *adjudicate* anything —
+it pattern-matches. Two specific tells: one article folded distinct rules (currency +
+integer-money), so a multi-currency violation and a float violation both traced to
+the same "Article II," telling you nothing about which clause failed; and no two
+articles ever pulled against each other, so conformance never required a tradeoff.
+
+**Action.** Split currency into its own Article III (clause-level traceability), and
+added a principle pair in genuine tension — Article V (*nothing silently lost /
+auditable*) vs. Article VI (*the user owns and can remove their data*) — that a
+delete/edit feature can't fully satisfy at once. Gave `/plan` a third verdict,
+**TENSION** (argue the tradeoff, don't auto-fail), told `/analyze` + `validator` to
+adjudicate rather than grep, and rewired seed 03 to trigger it (an editable /
+deletable shared ledger). Kept the bright-line articles bright on purpose.
+
+**Result.** The harness now tests both muscles: a lookup-able violation (seed 02 →
+Art. I) and an arguable tradeoff (seed 03 → Art. V vs. VI). The *contrast* is the
+lesson; the example spec even carries one `⚠ open tradeoff` row to model the good
+behavior. (Whether `/analyze` actually adjudicates it well awaits running seed 03.)
+
+**Takeaway.**
+
+- A rulebook of crisp, orthogonal rules tests recall, not judgment. To make a
+  reviewer demonstrate judgment, include at least one rule whose application is
+  arguable and at least one pair that can conflict — otherwise "passed the check"
+  only proves it can pattern-match.
+- Atomic clauses matter: fold several rules into one article and every finding traces
+  to the same place, which is the same as no traceability.
+- Don't over-correct into mush. Keep the bright lines bright, so the clear cases stay
+  clear and the judgment cases stand out by contrast.

@@ -41,8 +41,9 @@ papers over a gap.
 - `/specify seeds/02-contradiction.md` then `/plan <its slug>` → watch the gate
   **fail** on Article I *before* any design happens.
 - `/specify seeds/03-oversized.md` → `/plan` → `/tasks` → `/analyze` → watch the
-  scope force decomposition and `/analyze` catch the buried network and
-  multi-currency violations.
+  scope force decomposition, `/analyze` catch the buried network (Art. I) and
+  multi-currency (Art. III) violations, *and* adjudicate the Art. V vs. Art. VI
+  tension in an editable / deletable shared ledger — judgment, not lookup.
 
 After each run, read [`runs/LOG.md`](runs/LOG.md) and answer its reflection
 prompts. That reflection is the actual learning.

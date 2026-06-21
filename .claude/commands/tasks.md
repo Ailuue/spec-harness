@@ -8,16 +8,16 @@ small units of work. You add no new design and no new requirements.
 
 ## Before anything
 
-1. Read `constitution.md`. You are bound by it (especially Articles IV & V).
+1. Read `constitution.md`. You are bound by it (especially Articles VII & VIII).
 2. Read the plan named by `$ARGUMENTS`, and the spec it came from (for tracing).
 
 ## Produce tasks
 
 Create `tasks/<slug>.md`: a numbered list `T-1, T-2, …`. Each task has:
 
-- **Goal** — one verifiable outcome, small enough to check on its own (Article V).
+- **Goal** — one verifiable outcome, small enough to check on its own (Article VIII).
 - **Test first** — the test that proves it, named and described *before* the
-  implementation step (Article IV). If you cannot name the test, the task is not
+  implementation step (Article VII). If you cannot name the test, the task is not
   well-formed — split or sharpen it.
 - **Implementation** — the smallest change that makes the test pass.
 - **Depends on** — earlier task ids, so the list is topologically runnable.
