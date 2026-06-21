@@ -20,6 +20,12 @@ Append entries newest-on-top, one per command, like this:
 - **Sent back to:** <none | /specify | /plan | /tasks>
 ```
 
+### 2026-06-21 · tooling · trace + schema layer (meta)
+- **Result:** added [`tools/`](../../tools) — Zod schemas for spec/plan/tasks + a deterministic FR→plan→task checker (`trace.ts`). 12 tests pass. Wired `/analyze` to run the gate *before* delegating to `validator`.
+- **Friction:** deciding it wasn't a constitution violation. `src/` is sacrosanct-empty, but this is harness infra, not the tracker — the same "enforce with tooling, not prose" move LEARNINGS already argues for. Kept it out of `src/` to respect that boundary.
+- **What the structure caught:** running the real `personal-finance-app` set through the checker reproduced the validator's hand-built matrix exactly, *and* mechanically caught the known T-11 blocked-task gap — plus surfaced a doc/reality drift the prose missed: specify.md says Basis is one of three values, but every real spec uses `⚠ assumed` / `⚠ open tradeoff`. The schema couldn't not notice.
+- **Sent back to:** none (meta-tooling, not a pipeline run)
+
 ## Reflection prompts (fill in after running the seeds)
 
 - Where did separating "what" from "how" actually pay off?
@@ -31,6 +37,12 @@ Append entries newest-on-top, one per command, like this:
 ---
 
 <!-- entries below (newest first) -->
+
+### 2026-06-21 · /specify · expense-tracker
+- **Result:** spec written; 3 FRs, 0 open questions, 5 ⚠ assumed defaults. Tiny, constitution-clean core (record + flat-list view).
+- **Friction:** almost none — and that's the finding. The interview collapsed a maximally vague request into two must-haves. The only judgment was honoring what was *not* selected: edit/delete and totals were left unticked, so I excluded them rather than inventing them (the categories/budgets/login trap the seed warned about).
+- **What the structure caught:** because edit/delete fell out of scope, the Art. V vs VI trace-vs-erase tension that dominated `personal-finance-app` **never arises here** — same constitution, opposite outcome, purely from scope. Recording wasn't explicitly selected either; the spec records it as an assumed precondition of "view" rather than laundering it in as obvious.
+- **Sent back to:** none — proceed to `/plan` (expected to pass cleanly; this is the "is the full ceremony overkill?" candidate).
 
 ### 2026-06-21 · /analyze · personal-finance-app
 - **Result:** PASS-WITH-RISKS — 0 Critical, 3 High, 2 Medium, 1 Low. Traceability clean; trimmed core has no constitution violations.

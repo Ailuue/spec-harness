@@ -255,3 +255,57 @@ not lookup. The judgment changes did what they were built to do.
   read, but it only became *undeniable and actionable* — a concrete 4-phase split — at
   `/tasks`, when every FR exploded into tests. The structure converts vague unease into a
   specific cut.
+
+---
+
+## 2026-06-21 — Hand the deterministic half of a review to code; the schema catches drift for free
+
+**Context.** `/analyze` and the `validator` spent most of their effort building a
+traceability matrix by hand — every `FR-n` → plan element → task(s), flagging
+dropped requirements, orphan tasks, and uncovered FRs. Each artifact's structure
+(numbered FRs, the Decisions table with a constrained `Basis`, the plan's verdict
+vocabulary) was enforced only by prose in the command files.
+
+**Finding.** That matrix is graph reachability — deterministic, cheap, and exactly
+what an LLM gets subtly wrong under load. Spending reviewer budget on it is both
+wasteful and *less* reliable than a few lines of code. And the "structure" the
+prose described wasn't actually being checked: nothing parsed the artifacts, so a
+malformed FR id or an out-of-vocabulary `Basis` sailed through until a human
+noticed.
+
+**Action.** Added a [`tools/`](tools) package: Zod schemas for the implicit shape
+of each artifact, a thin remark/unified markdown→AST parser that lifts the
+structured bits out (no heading-regexing), and [`trace.ts`](tools/src/trace.ts)
+that builds the FR→plan→task graph and emits the matrix plus violations. Split the
+findings by who should handle them: **gate** (dropped/uncovered FR, unresolved
+`[NEEDS CLARIFICATION:]`, blocked task, malformed artifact) fails fast *before* the
+LLM runs; **advisory** (orphan tasks, infra-only coverage, spelling drift) rides
+along as context. Wired `/analyze` to run the gate first and take the matrix as
+given. It does **not** replace the reviewer — it clears the mechanical work so the
+budget goes to judgment (the Art. V vs VI tension, laundered assumptions).
+
+**Result.** On the real `personal-finance-app` set the checker reproduced the
+validator's hand-built matrix exactly (8 FRs, all mapped + tasked) and
+mechanically caught the known T-11 blocked-task gap — exit 1, zero reviewer
+tokens. 12 tests cover the gate semantics. Encoding the `Basis` vocabulary as a
+schema also surfaced a drift the prose had masked: [specify.md](.claude/commands/specify.md)
+says `Basis` is one of three values, but every real spec uses `⚠ assumed` /
+`⚠ open tradeoff`. The schema couldn't *not* notice — a doc/reality gap no prose
+review had flagged.
+
+**Takeaway.**
+
+- **Split a review into the deterministic part and the judgment part, and give the
+  first to code.** Graph reachability, schema conformance, and marker scans are
+  cheaper *and* more reliable in ~300 lines than in an LLM context — and every
+  token saved there is a token the reviewer spends on what actually needs a mind.
+  This is the same "enforce with tooling, not instructions" move as the read-only
+  `validator`, one rung lower: there it was *capability*, here it's *computation*.
+- **Encoding an implicit contract as a schema audits the contract itself.** The
+  act of writing the `Basis` enum exposed that the documented vocabulary and the
+  lived vocabulary had diverged. Prose rules can't detect their own drift; a
+  parser that must accept real inputs will.
+- **Fail the cheap, certain checks before the expensive, fallible one.** Gating the
+  mechanical violations upstream means a malformed artifact set never burns
+  reviewer budget — and the human-judgment pass only ever runs on inputs that are
+  already structurally sound.
