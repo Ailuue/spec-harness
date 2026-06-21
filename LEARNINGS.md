@@ -214,3 +214,44 @@ behavior. (Whether `/analyze` actually adjudicates it well awaits running seed 0
   to the same place, which is the same as no traceability.
 - Don't over-correct into mush. Keep the bright lines bright, so the clear cases stay
   clear and the judgment cases stand out by contrast.
+
+---
+
+## 2026-06-21 — Observed: resolving a constitution tension can manufacture a fresh violation
+
+**Context.** First end-to-end run of seed 03 (the oversized request) — the test of
+whether the judgment rework actually makes `/analyze` adjudicate rather than grep. The
+request had to be cut at the `/plan` gate (4 of 10 FRs were network/multi-currency
+CONFLICTs) down to a local core that kept the editable/deletable ledger — the piece
+carrying the Art. V (nothing silently lost) vs. Art. VI (user can remove data) tension.
+
+**Finding.** Two things the earlier phases couldn't do.
+(1) The clause-level split paid off immediately: FR-3 (multi-currency + live rates)
+tripped *two* clauses at once — Art. III (one currency) and Art. I (network) — which the
+old folded article would have blurred into a single vague "Article II."
+(2) The real prize: `/plan` *argued* the V/VI tradeoff (erase the payload, keep a minimal
+deletion trace) instead of silently hard-deleting — and then `/analyze`, by *scrutinizing
+that argument* rather than keyword-matching, caught what nothing else had: the audit trace
+invented to satisfy Art. V is **user-observable behavior that exists only in the plan** —
+i.e. the fix for one article (V) quietly created a violation of another (X: the plan may
+not add requirements the spec lacks). The tension resolution manufactured a fresh defect.
+
+**Result (observed).** Gate cut 10 FRs → 8; `/tasks` flagged the trimmed core still
+oversized (15 tasks, 4 phases) and found T-11 untestable; `/analyze` returned
+PASS-WITH-RISKS with **3 High / 2 Medium / 1 Low**, and the two High findings that
+mattered (the Art. X audit-trace, the half-honored edit history) came from adjudication,
+not lookup. The judgment changes did what they were built to do.
+
+**Takeaway.**
+
+- **Fixing a tension is itself a change that needs re-review.** Resolving Art. V vs VI
+  required *adding behavior* (an audit trace), and that addition silently re-entered the
+  spec's territory (Art. X). A tradeoff resolution is not a local edit — re-run the
+  conformance check *on the resolution*, because the cure can be a new disease.
+- **The two reworks only work together.** Art. X ("decisions live in the artifact," from
+  review point 1) is exactly what caught the damage done by the V/VI tension machinery
+  (review point 2). Each fix covers the other's blind spot.
+- **Decomposition really does surface late.** The scope was "obviously" too big on first
+  read, but it only became *undeniable and actionable* — a concrete 4-phase split — at
+  `/tasks`, when every FR exploded into tests. The structure converts vague unease into a
+  specific cut.
