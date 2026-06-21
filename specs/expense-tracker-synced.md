@@ -72,10 +72,14 @@ copy reach their accountant automatically so bookkeeping isn't a separate chore.
 - Receipt scanning / bank import.
 - Editing an existing expense (delete-and-re-add only).
 
-## Resolved questions (interview, 2026-06-21)
+## Decisions & assumptions
 
-- Expense fields (FR-1): amount, date, short description. No category.
-- Edit vs. delete (FR-5): delete only; editing out of scope.
-- Amount validation: amounts must be positive; zero/negative rejected.
+| Question | Decision | Basis |
+|---|---|---|
+| Expense fields (FR-1) | amount, date, short description; no category | user-confirmed |
+| Edit vs. delete (FR-5) | delete only; editing out of scope | user-confirmed |
+| Amount validation | amounts must be positive; zero / negative rejected | user-confirmed |
+| Currency | single currency; multi-currency out of scope | constitution (Art. III) |
+| Delete semantics (FR-5) | **⚠ open tradeoff** — hard-erase vs. keep a deletion trace pulls Art. V (nothing silently lost) against Art. VI (user can remove their data); to be argued in `/plan` | ⚠ open tradeoff |
 
-_No `[NEEDS CLARIFICATION]` markers remain._
+_No `[NEEDS CLARIFICATION]` markers remain; one ⚠ open tradeoff is recorded for `/plan` to adjudicate._

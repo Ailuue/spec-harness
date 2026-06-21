@@ -71,7 +71,7 @@ underspecified one-liner ([`01-vague`](seeds/01-vague.md)), a request that
 violates a constitution article ([`02-contradiction`](seeds/02-contradiction.md)
 → network vs. Article I), and a kitchen-sink ask with landmines buried
 mid-sentence ([`03-oversized`](seeds/03-oversized.md) → multi-currency vs.
-Article II, plus network items). The commands contain no seed-specific logic.
+Article III, plus network items). The commands contain no seed-specific logic.
 
 **Result.** The four commands have zero references to the seeds (verifiable by
 reading them), so the friction is purely a function of seed content — meaning the
@@ -138,3 +138,40 @@ was reading one spec.
   so a contradiction shows up on the first pass instead of the second. Running the
   harness on its own toy example is what exposed this — the harness doing its job
   on itself.
+
+---
+
+## 2026-06-21 — Independence and amnesia are the same coin: make the artifact carry its own decisions
+
+**Context.** `/analyze` earns its rigor by reviewing in an isolated context — the
+`validator` never watched the work being authored, so it can't rubber-stamp its own
+reasoning.
+
+**Finding.** That isolation has a twin cost I hadn't defended: amnesia. The reviewer
+sees only the four files — not the conversation, not `runs/LOG.md`. So if `/specify`
+guessed, the user corrected it in chat, and `/specify` wrote the resolved version up
+as confident prose, the reviewer has no way to know a decision was ever contested. A
+clean `/analyze` could just mean the guesses were *laundered into fact* before the
+reviewer arrived. I had defended independence and left amnesia wide open.
+
+**Action.** Made the artifact self-contained. `/specify` must now record every
+resolved ambiguity in a **Decisions & assumptions** table (decision + basis:
+`user-confirmed` / `assumed-default` / `constitution`); constitution Article X makes
+that recording binding; and `/analyze` + the `validator` audit it. The teeth: the
+reviewer doesn't just read the table — it *independently re-derives* what should have
+required a decision and compares, so even a guess no one recognized as a guess gets
+caught.
+
+**Result.** A reviewer with zero memory of how the spec was produced can now
+interrogate every judgment in it, and an empty Decisions section on a non-trivial
+spec is itself a finding. (Effect on real catch-rate awaits a run that deliberately
+plants a laundered guess.)
+
+**Takeaway.**
+
+- When you isolate a reviewer for independence, you also blind it. Pay that back by
+  making the artifact carry everything needed to judge it — a decision that lives
+  only in chat or a side-log is, to the reviewer, a decision that never happened.
+- "It passed review" only means something if the review could see what was uncertain.
+  Record decisions *with their basis*, and have the reviewer regenerate the
+  expected-decisions list rather than trusting the one it was handed.
