@@ -87,3 +87,54 @@ will measure.)
 - This is the eval-design rule in another costume: the fixtures carry the signal,
   the runner stays neutral (good-news-feed's fixture/runner separation). The same
   principle showing up in a different domain is a good sign it's a real one.
+
+---
+
+## 2026-06-21 — Observed: the constitution gate stops a contradictory request before any design exists
+
+**Context.** First end-to-end run of the harness, on the contradiction seed
+([`02-contradiction`](seeds/02-contradiction.md)): `/specify` then `/plan`. The
+question was whether the gate actually *stops* a request that conflicts with the
+rules, or just complains while building it anyway.
+
+**Finding.** It stopped — but in *two* stages, and the order was instructive.
+(1) `/plan` first halted at **Gate 1 (spec readiness)** because the spec still had
+three `[NEEDS CLARIFICATION]` markers (expense fields, edit/delete, validation) —
+none of them the actual problem. The contradiction was *masked* behind unrelated
+vagueness, and the constitution was never consulted on attempt 1. (2) Only after
+the clarifications were resolved did `/plan` reach **Gate 2 (Constitution Check)**,
+which flagged FR-2 (auto-email) and FR-3 (cloud sync) as conflicts with Article I
+(local-first, no network) and failed the gate.
+
+**Action.** Ran the pipeline as written and journaled both stops in
+[`runs/LOG.md`](runs/LOG.md). No workaround was attempted — refusing to work
+around the conflict is the whole point of the gate.
+
+**Result (observed).**
+
+| Step | Output produced |
+|---|---|
+| `/specify` | spec with 5 FRs, **3 open questions** |
+| `/plan` attempt 1 | **0 lines of plan** — halted at Gate 1 |
+| `/specify` revision | 0 open questions |
+| `/plan` attempt 2 | **0 lines of plan** — Gate 2 FAILED, **2 of 5 FRs** flagged |
+
+`plans/` never received a file; **no architecture or code was written** for a
+request that is incompatible with the rules. The cost of discovering the conflict
+was reading one spec.
+
+**Takeaway.**
+
+- The gate pays off exactly where it's cheapest: an unbuildable-as-asked request
+  was rejected at the planning boundary, before a single design decision. A
+  one-shot "just build it" prompt would have started implementing the email/sync
+  feature and surfaced the conflict only as rework.
+- **A readiness gate in front of the constitution gate lets vagueness hide a
+  contradiction.** The Article I conflict was invisible on attempt 1 because
+  unrelated open questions tripped first. Clarify fully, or the important check
+  never runs.
+- **Concrete harness improvement this run surfaced:** have `/plan` report *all*
+  gate findings — including constitution conflicts — even when it halts on Gate 1,
+  so a contradiction shows up on the first pass instead of the second. Running the
+  harness on its own toy example is what exposed this — the harness doing its job
+  on itself.
